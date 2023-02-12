@@ -1,4 +1,4 @@
-The glm function and the multiple
+The glm function and effect size estimates
 ================
 
 ## Estimating Risk Ratios and Risk Differences Using Regression (Naimi & Whitcomb, 2020)

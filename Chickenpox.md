@@ -1,4 +1,5 @@
-The glm function and effect size estimates
+Odds ratio, Relative risk ratio, Risk difference and generalized linear
+model
 ================
 
 ## Estimating Risk Ratios and Risk Differences Using Regression (Naimi & Whitcomb, 2020)
@@ -50,10 +51,10 @@ following formula:
 
 $$\ RR = \frac{a/(a+b)}{c/(c+d)}$$
 
-For instance, we wish to estimate the RR of a particular disease in an
-exposed group vs in a non-exposed group. If the estimated RR is greater
-than 1, it means that the outcome is more likely to occur given the
-factor, whereas if less than 1, the outcome is less likely to occur
+For instance, we wish to estimate the RR ratio of a particular disease
+in an exposed group vs in a non-exposed group. If the estimated RR is
+greater than 1, it means that the outcome is more likely to occur given
+the factor, whereas if less than 1, the outcome is less likely to occur
 given the factor. Indeed, a RR = 3 means that the outcome is 3 times
 more likely to occur given the exposition relative to no exposition.
 
@@ -84,13 +85,13 @@ the corresponding link function will dependent about the estimate of
 interest for a main purpose. As we’re speaking about three different
 estimates, we will focus on three link functions.
 
-logit link: $\ log\frac{P(Y = 1)}{1 - P(Y = 1)}$
+`logit`: $\ log\frac{P(Y = 1)}{1 - P(Y = 1)}$
 
-log link: $log(P)$
+`log`: $log(P)$
 
-identity: $P$
+`identity`: $P$
 
-## Create the data: Estimating Odds ratios, Risk Ratios and Risk Differences Using Regression (Wrensch et al., 1997
+## Create the data: Estimating Odds ratios, Risk Ratios and Risk Differences Using Regression (Wrensch et al., 1997)
 
 For the main purpose, we will borrow the data from Wrensch and
 colleagues. (1997). In this case-control study, those authors estimated
@@ -142,7 +143,7 @@ effRD <- function(model) {
 The last function will allow to check whether the extracted estimates
 correspond well to what we are looking for, by computed them from the
 contingency table (please note that we are working with only one
-categorical predictor variable, hence, this is raw estimates (i.e.,
+categorical predictor variable, hence, it returns raw estimates (i.e.,
 un-adjusted estimates) that we are looking for.
 
 ``` r
@@ -156,10 +157,8 @@ ratio <- function(data) {
 }
 ```
 
-Well, now, we have to create a data frame in order to analyze it with a
-logistic regression model. One can see that this not so tough to create
-it. With `id` we just defined the total number of participants. The next
-line allows to create a vector.
+Well, now, we have to create a data frame in order to analyze it with a logistic regression model. One can see that this not so tough to create it. With `id` we just defined the total number of participants. The next line allows to create a vector, in which we repeated the number `1` 267 times (corresponding to a number of persons that were exposed), `0` 114 times (corresponding to a number of persons that were unexposed) and etc... So why separate them like this ? Because, when collapsing this vector with the following vector (i.e., the 267 + 114 participnats that were both exposed and unexposed and that were cases and the 348 + 66 participants that were both exposed and unexposed and that were non-cases) will create a matrix in which the number of persons that were exposed or not and that were cases or not match well (i.e., capturing well the 4 combinations). 
+
 
 ``` r
 if(!exists("data_wide")) {
@@ -172,25 +171,25 @@ if(!exists("data_wide")) {
 ```
 
 For the two following models we are searching whether there is an
-association between the predictor variable,a nd the to-be explained
+association between the predictor variable, and the to-be explained
 variable. In other terms, we want to assess whether the predictor
-variable predicts the outcome. We quantify this association. But with
-our model we test such associations and we will explain latter the
-relation to the estimates of interest.
+variable predicts significantly the outcome, again we are simply
+searching wether a significant association exist regarding both
+variables.
 
 HO: There is no association between a history of Chickenpox and the risk
 to develop a Glioma H1: There is an association between a history of
 Chickenpox and the risk to develop a Glioma
 
 In term of our model, the paramater $\beta_1$ quantify this association
-and the aim ois to discover whether it is significant.
+and the aim is to discover whether it is significant.
 
 HO: $\beta_1 = 0$
 
 H1: $\beta_1 =/= 0$
 
 The first model that we are building for use a binomial distribution
-with a logit function.
+with a `logit` link function.
 
 ``` r
 model1 <- glm(Case~exposition, family = binomial(logit), data = data_wide, control = list(trace = TRUE)); summary(model1)
@@ -423,32 +422,10 @@ se <- sqrt(sandwich(model4)[2,2]); se
     ## [1] 0.07304571
 
 ``` r
-coefM4 <- as.matrix(summary(model4)$coefficients); print(coefM4)
-```
-
-    ##               Estimate Std. Error   z value     Pr(>|z|)
-    ## (Intercept) -0.4567584 0.09365857 -4.876846 1.077956e-06
-    ## exposition  -0.3776152 0.11188029 -3.375172 7.376957e-04
-
-``` r
-RR <- round(exp(coefM4[2,1]), 2); RR
-```
-
-    ## [1] 0.69
-
-``` r
-Ll <- round(exp(sum(coefM4[2,1], qnorm(0.025, mean = 0, sd = 1, lower.tail = T)*se)), 2); Ll
-```
-
-    ## [1] 0.59
-
-``` r
-Ul <- round(exp(sum(coefM4[2,1], qnorm(0.025, mean = 0, sd = 1, lower.tail = F)*se)), 2); Ul
-```
-
-    ## [1] 0.79
-
-``` r
+coefM4 <- as.matrix(summary(model4)$coefficients)
+RR <- round(exp(coefM4[2,1]), 2)
+Ll <- round(exp(sum(coefM4[2,1], qnorm(0.025, mean = 0, sd = 1, lower.tail = T)*se)), 2)
+Ul <- round(exp(sum(coefM4[2,1], qnorm(0.025, mean = 0, sd = 1, lower.tail = F)*se)), 2)
 cat("RR = ", RR, "95%CI [", Ll, ",", Ul, "]\n")
 ```
 
@@ -465,8 +442,10 @@ vcov_sandwich <- vcovHC(model4, type = "HC1"); vcov_sandwich
     ## exposition  -0.003224486  0.005349133
 
 ``` r
-se <- sqrt(vcov_sandwich[2,2])
+se <- sqrt(vcov_sandwich[2,2]); se
 ```
+
+    ## [1] 0.07313777
 
 However, we highlighted a main issue with model 4, as a consequence the
 $z$ value and the corresponding $p$ value are incorrect, therefore one
@@ -477,14 +456,13 @@ $p$-value reflects the area under the curve.
 zvalue <- coefM4[2,1]/se
 pvalue <- integrate(dnorm, lower = abs(zvalue), upper = Inf)$value
 pvalue <- 2*pvalue
-
 cat("Z-value =", zvalue, "p-value = ", pvalue, "\n")
 ```
 
     ## Z-value = -5.163067 p-value =  2.429361e-07
 
 We have previously seen how to obtain multiple estimates as a function
-of the link function used with glm, to be sure that it offers the real
+of the link function used with `glm`, to be sure that it offers the real
 estimate that we wanted, we will run a function and use it to estimate
 those effect sizes from the 2 by 2 contingency table previously coded.
 

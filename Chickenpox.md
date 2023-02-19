@@ -178,7 +178,9 @@ searching wether a significant association exist regarding both
 variables.
 
 HO: There is no association between a history of Chickenpox and the risk
-to develop a Glioma H1: There is an association between a history of
+to develop a Glioma 
+
+H1: There is an association between a history of
 Chickenpox and the risk to develop a Glioma
 
 In term of our model, the paramater $\beta_1$ quantify this association
@@ -279,7 +281,10 @@ interval is quite tough to interpret, often interpreted as the
 population parameter lies between both the lower and upper limits, which
 is false, rather, it offers well a reliable estimate of the study
 precision and the evidential weight in favor of an effect of interest
-(see Matthews, 2001).
+(see Matthews, 2001). Moreover, in order to reject the null hypothesis, 
+one has to check whether the confidence interval does not include 1. 
+It is however problematic to do that (e.g., Wasserstein et al., 2020), personally,
+I think that it is potentially inetresting to check that whenether both the lower and the upper limits are close to the point estimate.
 
 Now, let us carry out another `glm` model, rather than use
 `link = logit`, we will use `link = log`.
@@ -447,9 +452,9 @@ se <- sqrt(vcov_sandwich[2,2]); se
 
     ## [1] 0.07313777
 
-However, we highlighted a main issue with model 4, as a consequence the
-$z$ value and the corresponding $p$ value are incorrect, therefore one
-can correct it. Note that I use the `integrate` function because the
+We have just highlighted a main issue with model 4, as a consequence the
+$z$ value and the corresponding $p$-value are both incorrect, therefore one
+can correct it as follows. Note that I use the `integrate` function since the
 $p$-value reflects the area under the curve.
 
 ``` r

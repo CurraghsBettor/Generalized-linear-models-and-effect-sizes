@@ -5,8 +5,8 @@ model
 ## Estimating Risk Ratios and Risk Differences Using Regression (Naimi & Whitcomb, 2020)
 
 Recently, I discover a paper wrote by Naimi and Whitcomb (2020), in
-which the authors provided the mean to estimate odds ratio, relative
-risk ratio and risk difference ratio with the `glm` function by
+which these authors provided the mean to estimate the odds ratio, the relative
+risk ratio and the risk difference using the `glm` function and by
 selecting the appropriate link function. They provided R codes to allow
 reproduction of their results. Here, we will explore how to use those
 different links with another concrete example.
@@ -14,7 +14,7 @@ different links with another concrete example.
 ## Odds ratio, Relative risk ratio and risk difference ratio
 
 Traditionally estimated in epidemiological studies, we will discover
-three estimates, that are, odds ratio, relative risk ratio and risk
+three estimates, that are, the odds ratio, the relative risk ratio and the risk
 difference, and how to obtain them from a Generalized linear models in
 R.
 
@@ -59,7 +59,7 @@ given the factor. Indeed, a RR = 3 means that the outcome is 3 times
 more likely to occur given the exposition relative to no exposition.
 
 The last estimate that we will describe is the Risk
-difference/Attributable risk “RD or AR is defined as the difference in
+difference/Attributable risk. “RD or AR is defined as the difference in
 risk of a condition such as a disease between an exposed group and an
 unexposed group” (Kim, 2017). Simply. Contrary to the previous effect
 size which express the $ratio$ between probabilities, in the current
@@ -75,10 +75,10 @@ $$\ RR = a/(a+b) - c/(c+d)$$
 ## Generalized linear models
 
 Generalized linear models are special cases of model that are often use
-in R in order to explore how a predictor variable (or more) predict a
+in R in order to explore how a predictor variable (or more) predicts a
 to-be explained variable. Then, we have to select the appropriate
 distribution (e.g., are the data normally distributed ?), and a
-corresponding link function. In the case of logistic regression model,
+corresponding link function. In the case of logistic regression,
 that models the relationship between a binary outcome and predictor
 variables, the appropriate distribution is the binomial distribution and
 the corresponding link function will dependent about the estimate of
@@ -98,8 +98,8 @@ colleagues. (1997). In this case-control study, those authors estimated
 the strength of association between an episode of chickenpox (disease
 caused by the Varicella Zoster virus) and the risk to be affected by
 glioma (a brain tumor). Overall they found that there is an inverse link
-between the exposition to the Chickenpox and the outcome. Let create the
-data in a contingency table, to appreciate the data.
+between a prior infection with Chickenpox and the risk to develop a glioma. Let's create the
+data in a contingency table to appreciate the data.
 
 ``` r
 DataM <- matrix(c(267, 348, 114, 66),
@@ -111,9 +111,9 @@ DataM <- matrix(c(267, 348, 114, 66),
     ## [2,]  114   66
 
 Before perform the analysis, we need some functions that I’ve programmed
-to render the analysis easier. The first one allows to take the output
+to keep the analysis easier. The first one allows to take the output
 of the logistic regression model, and estimated a corresponding odds
-ratio or risk ratio along with the corresponding 95% confidence
+ratio or a risk ratio along with the corresponding 95% confidence
 interval.
 
 ``` r
@@ -157,7 +157,7 @@ ratio <- function(data) {
 }
 ```
 
-Well, now, we have to create a data frame in order to analyze it with a logistic regression model. One can see that this not so tough to create it. With `id` we just defined the total number of participants. The next line allows to create a vector, in which we repeated the number `1` 267 times (corresponding to a number of persons that were exposed), `0` 114 times (corresponding to a number of persons that were unexposed) and etc... So why separate them like this ? Because, when collapsing this vector with the following vector (i.e., the 267 + 114 participnats that were both exposed and unexposed and that were cases and the 348 + 66 participants that were both exposed and unexposed and that were non-cases) will create a matrix in which the number of persons that were exposed or not and that were cases or not match well (i.e., capturing well the 4 combinations). 
+Well, now, we have to create a data frame in order to analyze it with a logistic regression model. One can see that this not so tough to create it. With `id` we just defined the total number of participants. The next line allows to create a vector, in which we repeated the number `1` 267 times (corresponding to a number of persons that were exposed and that were cases), `0` 114 times (corresponding to a number of persons that were unexposed and cases) and etc... So why separate them like this ? Because, when collapsing this vector with the following vector (i.e., the 267 + 114 participnats that were both exposed and unexposed and that were cases and the 348 + 66 participants that were both exposed and unexposed and that were non-cases) will create a matrix in which the number of persons that were exposed or not and that were cases or not match well (i.e., capturing well the 4 combinations). 
 
 
 ``` r
@@ -171,11 +171,9 @@ if(!exists("data_wide")) {
 ```
 
 For the two following models we are searching whether there is an
-association between the predictor variable, and the to-be explained
-variable. In other terms, we want to assess whether the predictor
-variable predicts significantly the outcome, again we are simply
-searching wether a significant association exist regarding both
-variables.
+association between the predictor variable and the to-be explained
+variable. More particularly, we want to assess whether the predictor
+variable predicts significantly the outcome, that we will assess using the `glm`.
 
 HO: There is no association between a history of Chickenpox and the risk
 to develop a Glioma 
@@ -183,7 +181,11 @@ to develop a Glioma
 H1: There is an association between a history of
 Chickenpox and the risk to develop a Glioma
 
-In term of our model, the paramater $\beta_1$ quantify this association
+H0: The history of Chickenpox does not predict the risk to develop the risj to develop a glioma
+
+H1: The history of Chickenpox predicts the risk to develop a glioma
+
+In term of our model, the paramater $\beta_1$ quantify the prediction
 and the aim is to discover whether it is significant.
 
 HO: $\beta_1 = 0$
@@ -229,16 +231,16 @@ model1 <- glm(Case~exposition, family = binomial(logit), data = data_wide, contr
 At this step, we want to interpret our results of course. Let takes the
 column `Estimate` and the row `expoisition`, we see a $\beta_1$
 parameter that equals -0.8115. We see that this parameter is
-significant, thus rejecting the null hypothesis of no association
-between the outcome and the exposition. This parameter reflects the
+significant, thus rejecting the null hypothesis stating that the exposition does not 
+predict the outcome. In fact, this parameter reflects the
 change in $log-odds$ for one-unit change in the predictor variable.
-Then, the predictor variable is binary, 0(no)/1(yes), a shift from 0 to
+Then, given the fact that the predictor variable is binary, 0(no)/1(yes), a shift from 0 to
 1, results in a change in the log-odds of -0.8115. Therefore, the
 negative estimate reveals that the non-exposition results as an outcome
 that is more likely to occur compared to the exposition. Put another
-way, a shift to exposition results in an outcome that is less likely to
-occur, thus an exposition results in a decrease of the likelihood to
-develop the disease then, offering a protection against the development
+way, a shift in the exposition results in an outcome that is less likely to
+occur, thus an exposition decreases the likelihood to
+develop the disease, thus, offering a protection against the development
 of the disease. In the context of our example, it means that a prior
 Chickenpox infection protects against the likelihood to develop a
 glioma. Before continuing what is the relationship between the $\beta$

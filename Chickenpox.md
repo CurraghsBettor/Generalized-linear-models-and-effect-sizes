@@ -278,14 +278,16 @@ The returned odds ratio equals 0.44, which indicates that the odds of
 developing a glioma given a prior infection to chickenpox is 0.44 higher
 than the odd of developing a glioma given no prior infection, then an
 exposition reduces the risk to develop the disease (i.e., because the OR
-is below 1). We obtain as well a corresponding 95%CI. A confidence
+is below 1). This odds ratio expresses the strengh between the two variables.
+We obtain as well a corresponding 95%CI. A confidence
 interval is quite tough to interpret, often interpreted as the
 population parameter lies between both the lower and upper limits, which
 is false, rather, it offers well a reliable estimate of the study
 precision and the evidential weight in favor of an effect of interest
 (see Matthews, 2001). Moreover, in order to reject the null hypothesis, 
 one has to check whether the confidence interval does not include 1. 
-It is however problematic to do that (e.g., Wasserstein et al., 2020), personally,
+It is however problematic to focus on whether the CI includes or not 1 regarding our statistical 
+hypothesis (e.g., Wasserstein et al., 2020). I'm pretty sure that it is because... personally,
 I think that it is potentially inetresting to check that whenether both the lower and the upper limits are close to the point estimate.
 
 Now, let us carry out another `glm` model, rather than use

@@ -181,7 +181,7 @@ to develop a Glioma
 H1: There is an association between a history of
 Chickenpox and the risk to develop a Glioma
 
-H0: The history of Chickenpox does not predict the risk to develop the risj to develop a glioma
+H0: The history of Chickenpox does not predict the risk to develop the risk to develop a glioma
 
 H1: The history of Chickenpox predicts the risk to develop a glioma
 
@@ -192,8 +192,8 @@ HO: $\beta_1 = 0$
 
 H1: $\beta_1 =/= 0$
 
-The first model that we are building for use a binomial distribution
-with a `logit` link function.
+The first model that we are building for use a binomial distribution, 
+with a `logit` link function, and is known as logistic regression.
 
 ``` r
 model1 <- glm(Case~exposition, family = binomial(logit), data = data_wide, control = list(trace = TRUE)); summary(model1)
@@ -291,7 +291,7 @@ hypothesis (e.g., Wasserstein et al., 2020). I'm pretty sure that it is because.
 I think that it is potentially inetresting to check that whenether both the lower and the upper limits are close to the point estimate.
 
 Now, let us carry out another `glm` model, rather than use
-`link = logit`, we will use `link = log`.
+`link = logit`, we will use `link = log`, this model is known as log-binomial regression.
 
 ``` r
 model2 <- glm(Case~exposition, family = binomial("log"), data = data_wide); summary(model2)
@@ -389,7 +389,7 @@ effRD(model3)
 Now, we come back to the RR ratio, as revealed in Naimi and Whitcomb
 (2020), it appears that use the `log` link function with a binomial
 distribution (for estimating log relative risk ratio) can be accompanied
-by an error. In that case it is necessary to use a poisson distribution
+by an error (it appears for another that I have conducted recently). In that case it is necessary to use a poisson distribution
 and the `log` link function.
 
 ``` r
@@ -430,16 +430,6 @@ se <- sqrt(sandwich(model4)[2,2]); se
 
     ## [1] 0.07304571
 
-``` r
-coefM4 <- as.matrix(summary(model4)$coefficients)
-RR <- round(exp(coefM4[2,1]), 2)
-Ll <- round(exp(sum(coefM4[2,1], qnorm(0.025, mean = 0, sd = 1, lower.tail = T)*se)), 2)
-Ul <- round(exp(sum(coefM4[2,1], qnorm(0.025, mean = 0, sd = 1, lower.tail = F)*se)), 2)
-cat("RR = ", RR, "95%CI [", Ll, ",", Ul, "]\n")
-```
-
-    ## RR =  0.69 95%CI [ 0.59 , 0.79 ]
-
 Another mean to obtain the correct standard error:
 
 ``` r
@@ -456,6 +446,17 @@ se <- sqrt(vcov_sandwich[2,2]); se
 
     ## [1] 0.07313777
 
+
+``` r
+coefM4 <- as.matrix(summary(model4)$coefficients)
+RR <- round(exp(coefM4[2,1]), 2)
+Ll <- round(exp(sum(coefM4[2,1], qnorm(0.025, mean = 0, sd = 1, lower.tail = T)*se)), 2)
+Ul <- round(exp(sum(coefM4[2,1], qnorm(0.025, mean = 0, sd = 1, lower.tail = F)*se)), 2)
+cat("RR = ", RR, "95%CI [", Ll, ",", Ul, "]\n")
+```
+
+    ## RR =  0.69 95%CI [ 0.59 , 0.79 ]
+
 We have just highlighted a main issue with model 4, as a consequence the
 $z$ value and the corresponding $p$-value are both incorrect, therefore one
 can correct it as follows. Note that I use the `integrate` function since the
@@ -471,9 +472,9 @@ cat("Z-value =", zvalue, "p-value = ", pvalue, "\n")
     ## Z-value = -5.163067 p-value =  2.429361e-07
 
 We have previously seen how to obtain multiple estimates as a function
-of the link function used with `glm`, to be sure that it offers the real
-estimate that we wanted, we will run a function and use it to estimate
-those effect sizes from the 2 by 2 contingency table previously coded.
+of the link function used with `glm`, to be sure that those mdoels offered the real
+estimates that we wanted, we will run a function that we have built previously and use it to estimate
+those effect sizes from the 2 by 2 contingency table.
 
 ``` r
 ratio <- function(data) {
@@ -497,7 +498,7 @@ We see that our models estimated well all our effect sizes.
 In other tutorials I will explore how to perform such logistic
 regression models with a continuous predictor variable and with multiple
 predictor variable, hence allowing to obtain adjusted odds/relative risk
-ratio (as much as Data from Wrensch et al., 1997 were adjusted on age).
+ratio (as much as Data from Wrensch et al., 1997 were adjusted on age, but it was not done here beacuse of a lack of data).
 As well I will explore how to perform different tests to assess the
 association between the variables (i.e., different tests that allow to
 assess whether $\beta =/= 0$).

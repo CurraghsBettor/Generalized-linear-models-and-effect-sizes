@@ -1,1 +1,3 @@
-# Generalized-linear-models-and-effect-sizes
+# Generalized linear models binomial outcomes and effect sizes
+
+To-be-corrected

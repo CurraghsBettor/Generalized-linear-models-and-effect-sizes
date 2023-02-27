@@ -15,13 +15,13 @@ different links with another concrete example.
 
 Traditionally estimated in epidemiological studies, we will discover
 three estimates, that are, the odds ratio, the relative risk ratio and the risk
-difference, and how to obtain them from a Generalized linear models in
+difference, and how to obtain them using a Generalized linear models in
 R.
 
 The odds ratio expresses the ratio between the odd of a binomial
 distributed outcome (e.g., a particular disease) given the exposition to
 a given factor (or given a specific factor) over the odd of the outcome
-given no-exposure. Before continuing, what’s a odd. A odd expresses the
+given no-exposure. Before continuing, what’s an odd ?. A odd expresses the
 ratio between the probability of the outcome occurring $P(Y = 1)$ over
 the probability of the outcome non-occurring $1 - P(Y = 1)$, then, if
 the odd is greater than 1, it means that the outcome is more likely to
@@ -78,11 +78,11 @@ Generalized linear models are special cases of model that are often use
 in R in order to explore how a predictor variable (or more) predicts a
 to-be explained variable. Then, we have to select the appropriate
 distribution (e.g., are the data normally distributed ?), and a
-corresponding link function. In the case of logistic regression,
-that models the relationship between a binary outcome and predictor
-variables, the appropriate distribution is the binomial distribution and
+corresponding link function. For the main purpose, we will model
+the relationship between a binary outcome and a binary predictor
+variable, then, the appropriate distribution is the binomial distribution and
 the corresponding link function will dependent about the estimate of
-interest for a main purpose. As we’re speaking about three different
+interest that we want. As we’re speaking about three different
 estimates, we will focus on three link functions.
 
 `logit`: $\ log\frac{P(Y = 1)}{1 - P(Y = 1)}$
@@ -112,7 +112,7 @@ DataM <- matrix(c(267, 348, 114, 66),
 
 Before perform the analysis, we need some functions that I’ve programmed
 to keep the analysis easier. The first one allows to take the output
-of the logistic regression model, and estimated a corresponding odds
+of the logistic or the log-binomial regression model (see below for the distinction between both), and estimated a corresponding odds
 ratio or a risk ratio along with the corresponding 95% confidence
 interval.
 
@@ -320,9 +320,10 @@ model2 <- glm(Case~exposition, family = binomial("log"), data = data_wide); summ
     ## 
     ## Number of Fisher Scoring iterations: 5
 
-Unsurprisingly, the estimate is again significant and negative. The
-returned value is different from the previous one. Indeed, we have
-estimated a log risk. In the context of our exemple, it highlights that
+Unsurprisingly, the estimate is again significant and negative. Contrary to the previous 
+estimate that refected a change in the $log-odds$, the current estimate reflects the change
+in the $log-risk$ per one-unit change. In the context of our exemple, it means that a shift from no
+prior infection to prior infection results in a change in the log-risk of -0.37762, then, it highlights that
 having no episode of chickenpox results in an increased risk to develop
 a glioma. Exponentiate this estimate returns thus the Relative risk
 ratio.
@@ -333,9 +334,9 @@ effORRR(model2)
 
     ## OR/RR = 0.69 95% CI [ 0.59 , 0.79 ]
 
-Thus, have had a chickenpox episode increased by 0.69 the risk to
-develop a glioma compared to have had nothing. Thus, a chickenpox
-infection protects against the risk, hence, we want to quantify its
+Regarding this exponentiate estimate, have had a chickenpox episode increased by 0.69 the risk to
+develop a glioma compared to have had nothing. As a consequenxe, a chickenpox
+infection protects against the risk, hence, one can quantify its
 percentage of protection:
 
 ``` r
@@ -344,11 +345,11 @@ percentage of protection:
 
     ## [1] 31
 
-So, according to the relative risk ratio, the chickenpox infection
-protects by 31% against the risk to develop a glioma. Quite simple no ?
+So, the chickenpox infection protects by 31% against the risk to develop a glioma. 
+Quite simple no ?
 
 Let’s now perform a new model by which we want to estimate the Risk
-difference:
+difference, in this case, it is not needed to exponentiate the $\beta_1$ coeffciient, this one equals directly the Risk difference.
 
 ``` r
 model3 <- glm(Case ~ exposition, family = binomial("identity"), data = data_wide); summary(model3)
@@ -378,7 +379,7 @@ model3 <- glm(Case ~ exposition, family = binomial("identity"), data = data_wide
     ## 
     ## Number of Fisher Scoring iterations: 2
 
-and let’s display the results with 95%CI:
+Now let’s display the results with 95%CI:
 
 ``` r
 effRD(model3)
@@ -389,7 +390,8 @@ effRD(model3)
 Now, we come back to the RR ratio, as revealed in Naimi and Whitcomb
 (2020), it appears that use the `log` link function with a binomial
 distribution (for estimating log relative risk ratio) can be accompanied
-by an error (it appears for another that I have conducted recently). In that case it is necessary to use a poisson distribution
+by an error (it appears for another results that I have analyzed recently).  More precisely, with log-binomial regression models, a fail a convergence can arise (see Williamson et al., 2013).
+In that case it is necessary to use a poisson distribution
 and the `log` link function.
 
 ``` r
@@ -421,8 +423,8 @@ model4 <- glm(Case~exposition, data = data_wide, family = poisson("log")); summa
     ## Number of Fisher Scoring iterations: 5
 
 However, because the distribution is not what one has to use, it
-returned incorrect standard errors. Therefore, one has to use the robust
-sandwich variance estiamtor using the `sandwich` package as follows:
+returned incorrect standard errors. Therefore, as adviced by Naimi and Whitcomb (2020), one has to use the robust
+sandwich variance estimator using the `sandwich` package, as follows:
 
 ``` r
 se <- sqrt(sandwich(model4)[2,2]); se
@@ -473,7 +475,7 @@ cat("Z-value =", zvalue, "p-value = ", pvalue, "\n")
 
 We have previously seen how to obtain multiple estimates as a function
 of the link function used with `glm`, to be sure that those mdoels offered the real
-estimates that we wanted, we will run a function that we have built previously and use it to estimate
+estimates that we wanted, we will run a function as follows y and use it to estimate
 those effect sizes from the 2 by 2 contingency table.
 
 ``` r
@@ -495,10 +497,10 @@ ratio(DataM)
 
 We see that our models estimated well all our effect sizes.
 
-In other tutorials I will explore how to perform such logistic
+In other tutorials, I will explore how to perform such logistic
 regression models with a continuous predictor variable and with multiple
 predictor variable, hence allowing to obtain adjusted odds/relative risk
-ratio (as much as Data from Wrensch et al., 1997 were adjusted on age, but it was not done here beacuse of a lack of data).
+ratio (as much as Data from Wrensch et al., 1997 were adjusted on age, but it was not done here because of a lack of data).
 As well I will explore how to perform different tests to assess the
 association between the variables (i.e., different tests that allow to
-assess whether $\beta =/= 0$).
+test whether $\beta =/= 0$).

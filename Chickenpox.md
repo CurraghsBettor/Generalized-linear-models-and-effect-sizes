@@ -175,7 +175,7 @@ association between the predictor variable and the to-be explained
 variable. More particularly, we want to assess whether the predictor
 variable predicts significantly the outcome, that we will assess using the `glm`.
 
-HO: There is no association between a history of Chickenpox and the risk
+H0: There is no association between a history of Chickenpox and the risk
 to develop a Glioma 
 
 H1: There is an association between a history of

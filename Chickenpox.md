@@ -175,7 +175,7 @@ association between the predictor variable and the to-be explained
 variable. More particularly, we want to assess whether the predictor
 variable predicts significantly the outcome, that we will assess using the `glm`.
 
-H0: There is no association between a history of Chickenpox and the risk
+HO: There is no association between a history of Chickenpox and the risk
 to develop a Glioma 
 
 H1: There is an association between a history of
@@ -229,7 +229,7 @@ model1 <- glm(Case~exposition, family = binomial(logit), data = data_wide, contr
     ## Number of Fisher Scoring iterations: 4
 
 At this step, we want to interpret our results of course. Let takes the
-column `Estimate` and the row `expoisition`, we see a $\beta_1$
+column `Estimate` and the row `exposition`, we see a $\beta_1$
 parameter that equals -0.8115. We see that this parameter is
 significant, thus rejecting the null hypothesis stating that the exposition does not 
 predict the outcome. In fact, this parameter reflects the
@@ -286,12 +286,12 @@ is false, rather, it offers well a reliable estimate of the study
 precision and the evidential weight in favor of an effect of interest
 (see Matthews, 2001). Moreover, in order to reject the null hypothesis, 
 one has to check whether the confidence interval does not include 1. 
-It is however problematic to focus on whether the CI includes or not 1 regarding our statistical 
-hypothesis (e.g., Wasserstein et al., 2020). I'm pretty sure that it is because... personally,
-I think that it is potentially inetresting to check that whenether both the lower and the upper limits are close to the point estimate.
+It is however problematic to focus on whether the CI includes or not 1 in order or not to reject H0
+(e.g., Wasserstein et al., 2020). In my opinion, one can base our conclusion by regarding whether the CI includes 1 if and only if
+the width of the CI is small and quite close the point-estimate, because the more narrower CI, the more the evidential weight (Matthews, 2001).
 
 Now, let us carry out another `glm` model, rather than use
-`link = logit`, we will use `link = log`, this model is known as log-binomial regression.
+`link = logit`, we will use `link = log`, this model is known as the log-binomial regression.
 
 ``` r
 model2 <- glm(Case~exposition, family = binomial("log"), data = data_wide); summary(model2)
@@ -390,7 +390,7 @@ effRD(model3)
 Now, we come back to the RR ratio, as revealed in Naimi and Whitcomb
 (2020), it appears that use the `log` link function with a binomial
 distribution (for estimating log relative risk ratio) can be accompanied
-by an error (it appears for another results that I have analyzed recently).  More precisely, with log-binomial regression models, a fail a convergence can arise (see Williamson et al., 2013).
+by an error (it appears for another results that I have analyzed recently).  More precisely, with log-binomial regression models, a fail a convergence can arise (see Williamson et al., 2013), a notion that I do not master really.
 In that case it is necessary to use a poisson distribution
 and the `log` link function.
 
@@ -461,8 +461,7 @@ cat("RR = ", RR, "95%CI [", Ll, ",", Ul, "]\n")
 
 We have just highlighted a main issue with model 4, as a consequence the
 $z$ value and the corresponding $p$-value are both incorrect, therefore one
-can correct it as follows. Note that I use the `integrate` function since the
-$p$-value reflects the area under the curve.
+can correct that as follows:
 
 ``` r
 zvalue <- coefM4[2,1]/se
@@ -475,7 +474,7 @@ cat("Z-value =", zvalue, "p-value = ", pvalue, "\n")
 
 We have previously seen how to obtain multiple estimates as a function
 of the link function used with `glm`, to be sure that those mdoels offered the real
-estimates that we wanted, we will run a function as follows y and use it to estimate
+estimates that we wanted, we are going to run a function as follows and use it to estimate
 those effect sizes from the 2 by 2 contingency table.
 
 ``` r

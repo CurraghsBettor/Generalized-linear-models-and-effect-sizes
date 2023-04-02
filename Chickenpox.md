@@ -4,18 +4,18 @@ model
 
 ## Estimating Risk Ratios and Risk Differences Using Regression (Naimi & Whitcomb, 2020)
 
-Recently, I discover a paper wrote by Naimi and Whitcomb (2020), in
+Recently, I discover a paper written by Naimi and Whitcomb (2020), in
 which these authors provided the mean to estimate the odds ratio, the relative
-risk ratio and the risk difference using the `glm` function and by
-selecting the appropriate link function. They provided R codes to allow
+risk ratio, and the risk difference using the `glm` function and by
+selecting the appropriate link function. They provided R codes to allow the
 reproduction of their results. Here, we will explore how to use those
 different links with another concrete example.
 
 ## Odds ratio, Relative risk ratio and risk difference ratio
 
 Traditionally estimated in epidemiological studies, we will discover
-three estimates, that are, the odds ratio, the relative risk ratio and the risk
-difference, and how to obtain them using a Generalized linear models in
+three estimates, that are, the odds ratio, the relative risk ratio, and the risk
+difference, and how to obtain them using Generalized linear models in
 R.
 
 The odds ratio expresses the ratio between the odd of a binomial
@@ -233,7 +233,7 @@ column `Estimate` and the row `exposition`, we see a $\beta_1$
 parameter that equals -0.8115. We see that this parameter is
 significant, thus rejecting the null hypothesis stating that the exposition does not 
 predict the outcome. In fact, this parameter reflects the
-change in $log-odds$ for one-unit change in the predictor variable.
+difference in the $log-odds$ of the outcome for one-unit change in the predictor variable.
 Then, given the fact that the predictor variable is binary, 0(no)/1(yes), a shift from 0 to
 1, results in a change in the log-odds of -0.8115. Therefore, the
 negative estimate reveals that the non-exposition results as an outcome
@@ -258,7 +258,7 @@ corresponding confidence interval:
 $$Ll = e^{\beta - 1.96*se}$$
 
 where -1.96 denotes the 2.5% percentile (hence 1.96 denotes the 97.5%
-percentile) of the normal distribution, that is the standard deviation
+percentile) of the reduced centered Normal distribution, that is, the standard deviation
 from the mean (0) where the area under the curve equals $\alpha$/2 and
 $se$ denotes the standard error the $\beta$ parameter.
 
@@ -321,9 +321,10 @@ model2 <- glm(Case~exposition, family = binomial("log"), data = data_wide); summ
     ## Number of Fisher Scoring iterations: 5
 
 Unsurprisingly, the estimate is again significant and negative. Contrary to the previous 
-estimate that refected a change in the $log-odds$, the current estimate reflects the change
-in the $log-risk$ per one-unit change. In the context of our exemple, it means that a shift from no
-prior infection to prior infection results in a change in the log-risk of -0.37762, then, it highlights that
+estimate that refected a change in the $log-odds$ of the outcome for one-unit difference in the predictor variable, 
+the current estimate reflects the change in the $log-risk$ per one-unit change. 
+In the context of our exemple, it means that a shift from no
+prior infection to a prior infection results in a difference in the $log-risk$ of the outcome of -0.37762, then, it highlights that
 having no episode of chickenpox results in an increased risk to develop
 a glioma. Exponentiate this estimate returns thus the Relative risk
 ratio.
@@ -335,9 +336,9 @@ effORRR(model2)
     ## OR/RR = 0.69 95% CI [ 0.59 , 0.79 ]
 
 Regarding this exponentiate estimate, have had a chickenpox episode increased by 0.69 the risk to
-develop a glioma compared to have had nothing. As a consequenxe, a chickenpox
-infection protects against the risk, hence, one can quantify its
-percentage of protection:
+develop a glioma compared to have had nothing. Thus, a prior chickenpox
+infection protects against the risk to develop a glioma. One can quantify the
+percentage of protection as follows:
 
 ``` r
 (1-0.69)*100

@@ -5,49 +5,48 @@ model
 ## Estimating Risk Ratios and Risk Differences Using Regression (Naimi & Whitcomb, 2020)
 
 Recently, I discover a paper written by Naimi and Whitcomb (2020), in
-which these authors provided the mean to estimate the odds ratio, the relative
-risk ratio, and the risk difference using the `glm` function and by
-selecting the appropriate link function. They provided R codes to allow the
-reproduction of their results. Here, we will explore how to use those
-different links with another concrete example.
+which, these authors provided the mean to estimate the odds ratio (OR), the relative
+risk ratio (RR), and the risk difference (RD) by using the `glm` function and
+by selecting the appropriate link function. They provided R codes that allow for the
+reproduction of their results. Here, we will explore how to use these
+different models with another concrete example.
 
 ## Odds ratio, Relative risk ratio and risk difference ratio
 
 Traditionally estimated in epidemiological studies, we will discover
-three estimates, that are, the odds ratio, the relative risk ratio, and the risk
+three estimates: 1) the odds ratio, 2) the relative risk ratio, and 3) the risk
 difference, and how to obtain them using Generalized linear models in
 R.
 
-The odds ratio expresses the ratio between the odd of a binomial
+The OR expresses the ratio between the odd of a binomial
 distributed outcome (e.g., a particular disease) given the exposition to
 a given factor (or given a specific factor) over the odd of the outcome
-given no-exposure. Before continuing, what’s an odd ?. A odd expresses the
+given no-exposure. Wait, what’s an odd ? An odd expresses the
 ratio between the probability of the outcome occurring $P(Y = 1)$ over
-the probability of the outcome non-occurring $1 - P(Y = 1)$, then, if
+the probability of the outcome non-occurring $1 - P(Y = 1)$. As such, if
 the odd is greater than 1, it means that the outcome is more likely to
 occur, whereas if less than 1, the outcome is less likely to occur.
 Therefore, if the odds ratio is greater than 1, the outcome is more
 likely to occur given the exposition to a specific factor, whereas if
-less than one the outcome is less likely to occur given the exposure.
-The odds ratio can be computed as follow(s):
+less than 1 the outcome is less likely to occur given the exposure.
+The odds ratio can be computed as follows:
 
 $$\ OR = \frac{p_1/1-p_1}{p_2/1-p_2}$$
 
-It can be easily computed too from a contingency table, with the
+It can be also computed from a 2*2 contingency table, with the
 following equation:
 
 $$\ OR = \frac{a/c}{b/d}$$ where a and d denote the main-diagonal cells,
 and b and c denote the off-diagonal cells.
 
-A second estimate is the relative risk ratio, which is defined as the
+The second estimate is the RR, which is defined as the
 ratio between two probabilities: the probability of the outcome given
 the exposition (or in the exposed group) and the probability of the
 outcome given a non-exposition. This estimate is depicted as follows:
 
 $$\ RR = \frac{p_1}{p_2}$$
 
-One can obtain this estimate from a 2 by 2 contingency table via the
-following formula:
+One can obtain this estimate from a 2*2 contingency table as follows:
 
 $$\ RR = \frac{a/(a+b)}{c/(c+d)}$$
 
@@ -55,34 +54,33 @@ For instance, we wish to estimate the RR ratio of a particular disease
 in an exposed group vs in a non-exposed group. If the estimated RR is
 greater than 1, it means that the outcome is more likely to occur given
 the factor, whereas if less than 1, the outcome is less likely to occur
-given the factor. Indeed, a RR = 3 means that the outcome is 3 times
+given the factor. For instance, if the RR = 3, that means that the outcome is 3 times
 more likely to occur given the exposition relative to no exposition.
 
 The last estimate that we will describe is the Risk
 difference/Attributable risk. “RD or AR is defined as the difference in
 risk of a condition such as a disease between an exposed group and an
 unexposed group” (Kim, 2017). Simply. Contrary to the previous effect
-size which express the $ratio$ between probabilities, in the current
-case it expresses the $difference$ as depicted by the following formula:
+size which express the $ratio$ between probabilities, it expresses 
+the $difference$ as depicted by the following formula:
 
-$$\ RR = p_1 - p_2$$
+$$\ RD = p_1 - p_2$$
 
-One can obtain this estimate from a 2 by 2 contingency table via the
-following formula:
+This estimate can be found from a 2*2 contingency table as follows:
 
-$$\ RR = a/(a+b) - c/(c+d)$$
+$$\ RD = a/(a+b) - c/(c+d)$$
 
 ## Generalized linear models
 
-Generalized linear models are special cases of model that are often use
-in R in order to explore how a predictor variable (or more) predicts a
-to-be explained variable. Then, we have to select the appropriate
+Generalized linear models are special cases of models, often used
+in R to explore how a predictor variable (or more) predicts a
+to-be explained variable. Therefore, we have to select the appropriate
 distribution (e.g., are the data normally distributed ?), and a
 corresponding link function. For the main purpose, we will model
 the relationship between a binary outcome and a binary predictor
-variable, then, the appropriate distribution is the binomial distribution and
+variable. The appropriate distribution is the binomial distribution and
 the corresponding link function will dependent about the estimate of
-interest that we want. As we’re speaking about three different
+interest. As we’re speaking about three different
 estimates, we will focus on three link functions.
 
 `logit`: $\ log\frac{P(Y = 1)}{1 - P(Y = 1)}$
@@ -93,11 +91,11 @@ estimates, we will focus on three link functions.
 
 ## Create the data: Estimating Odds ratios, Risk Ratios and Risk Differences Using Regression (Wrensch et al., 1997)
 
-For the main purpose, we will borrow the data from Wrensch and
-colleagues. (1997). In this case-control study, those authors estimated
+We will borrow the data from Wrensch and
+colleagues. (1997). In this case-control study, these authors estimated
 the strength of association between an episode of chickenpox (disease
 caused by the Varicella Zoster virus) and the risk to be affected by
-glioma (a brain tumor). Overall they found that there is an inverse link
+glioma (a brain tumor). Overall they found an inverse link
 between a prior infection with Chickenpox and the risk to develop a glioma. Let's create the
 data in a contingency table to appreciate the data.
 
@@ -110,10 +108,9 @@ DataM <- matrix(c(267, 348, 114, 66),
     ## [1,]  267  348
     ## [2,]  114   66
 
-Before perform the analysis, we need some functions that I’ve programmed
-to keep the analysis easier. The first one allows to take the output
-of the logistic or the log-binomial regression model (see below for the distinction between both), and estimated a corresponding odds
-ratio or a risk ratio along with the corresponding 95% confidence
+Before performing the analysis, we need some functions that I’ve programmed
+to keep the analysis easier. The first one allows for take the output
+of the logistic or the log-binomial regression model, and estimated a corresponding OR or a RR along with the corresponding 95% confidence
 interval.
 
 ``` r
@@ -127,7 +124,7 @@ effORRR <- function(model) {
 }
 ```
 
-The next function allows simply to extract the risk difference and the
+The next function allows simply to extract the RD and the
 corresponding 95%CI.
 
 ``` r
@@ -141,10 +138,10 @@ effRD <- function(model) {
 ```
 
 The last function will allow to check whether the extracted estimates
-correspond well to what we are looking for, by computed them from the
+correspond well to what we are looking for, by computing them from the
 contingency table (please note that we are working with only one
 categorical predictor variable, hence, it returns raw estimates (i.e.,
-un-adjusted estimates) that we are looking for.
+un-adjusted estimates)).
 
 ``` r
 ratio <- function(data) {
@@ -157,7 +154,7 @@ ratio <- function(data) {
 }
 ```
 
-Well, now, we have to create a data frame in order to analyze it with a logistic regression model. One can see that this not so tough to create it. With `id` we just defined the total number of participants. The next line allows to create a vector, in which we repeated the number `1` 267 times (corresponding to a number of persons that were exposed and that were cases), `0` 114 times (corresponding to a number of persons that were unexposed and cases) and etc... So why separate them like this ? Because, when collapsing this vector with the following vector (i.e., the 267 + 114 participnats that were both exposed and unexposed and that were cases and the 348 + 66 participants that were both exposed and unexposed and that were non-cases) will create a matrix in which the number of persons that were exposed or not and that were cases or not match well (i.e., capturing well the 4 combinations). 
+Well, now, we have to create a data frame in order to analyze the data with a logistic regression model. One can see that this not so tough to create the data frame. With `id` we just defined the total number of observations. The next line allows to create a vector, in which we repeated the number `1` 267 times (corresponding to a number of persons that were exposed and that were cases), `0` 114 times (corresponding to a number of persons that were unexposed and cases) and etc... So why separate them like this ? Because, when collapsing this vector with the following vector (i.e., the 267 + 114 participnats that were both exposed and unexposed and that were cases and the 348 + 66 participants that were both exposed and unexposed and that were non-cases) will create a matrix in which the number of persons that were exposed or not and that were cases or not match well (i.e., capturing well 4 combinations). 
 
 
 ``` r
@@ -277,7 +274,7 @@ effORRR(model1)
 The returned odds ratio equals 0.44, which indicates that the odds of
 developing a glioma given a prior infection to chickenpox is 0.44 higher
 than the odd of developing a glioma given no prior infection, then an
-exposition reduces the risk to develop the disease (i.e., because the OR
+exposition reduces the risk (given the difficult to interpret the odd albeit really counfounding, I prefer to cam back to the notion of risk without posit the rare-disease assumption) to develop the disease (i.e., because the OR
 is below 1). This odds ratio expresses the strengh between the two variables.
 We obtain as well a corresponding 95%CI. A confidence
 interval is quite tough to interpret, often interpreted as the
@@ -391,9 +388,8 @@ effRD(model3)
 Now, we come back to the RR ratio, as revealed in Naimi and Whitcomb
 (2020), it appears that use the `log` link function with a binomial
 distribution (for estimating log relative risk ratio) can be accompanied
-by an error (it appears for another results that I have analyzed recently).  More precisely, with log-binomial regression models, a fail a convergence can arise (see Williamson et al., 2013), a notion that I do not master really.
-In that case it is necessary to use a poisson distribution
-and the `log` link function.
+by an error (it appears for another results that I have analyzed recently), a fail a convergence can arising (see Williamson et al., 2013; Huang, 2021).
+In that case, we can use a poisson distribution with a `log` link function.
 
 ``` r
 library(sandwich)
@@ -423,9 +419,7 @@ model4 <- glm(Case~exposition, data = data_wide, family = poisson("log")); summa
     ## 
     ## Number of Fisher Scoring iterations: 5
 
-However, because the distribution is not what one has to use, it
-returned incorrect standard errors. Therefore, as adviced by Naimi and Whitcomb (2020), one has to use the robust
-sandwich variance estimator using the `sandwich` package, as follows:
+However, because the distribution is not really what one has to use (see Huang, 2021), although the $\Beta$ estimate is correct, standard errors are not, that can lead to typpe II errors (Huang, 2021) Therefore, as adviced by Naimi and Whitcomb (2020), we have to use the so-called robust sandwich variance estimator by using the `sandwich` package, as follows:
 
 ``` r
 se <- sqrt(sandwich(model4)[2,2]); se
@@ -460,9 +454,7 @@ cat("RR = ", RR, "95%CI [", Ll, ",", Ul, "]\n")
 
     ## RR =  0.69 95%CI [ 0.59 , 0.79 ]
 
-We have just highlighted a main issue with model 4, as a consequence the
-$z$ value and the corresponding $p$-value are both incorrect, therefore one
-can correct that as follows:
+The $z$ value correspoding to the estimate and therefore the $p$-value are incorrect, we can correct that as follows:
 
 ``` r
 zvalue <- coefM4[2,1]/se
@@ -498,9 +490,7 @@ ratio(DataM)
 We see that our models estimated well all our effect sizes.
 
 In other tutorials, I will explore how to perform such logistic
-regression models with a continuous predictor variable and with multiple
-predictor variable, hence allowing to obtain adjusted odds/relative risk
-ratio (as much as Data from Wrensch et al., 1997 were adjusted on age, but it was not done here because of a lack of data).
-As well I will explore how to perform different tests to assess the
+regression models with multiple predictor variable allowing to obtain adjusted odds/relative risk
+ratio. Also, I will explore how to perform different tests to assess the
 association between the variables (i.e., different tests that allow to
 test whether $\beta =/= 0$).

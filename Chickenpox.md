@@ -1,5 +1,5 @@
-Odds ratio, Relative risk ratio, Risk difference and generalized linear
-model
+Odds Ratio, Relative Risk Ratio, Risk Difference and Generalized Linear
+Model
 ================
 
 ## Estimating Risk Ratios and Risk Differences Using Regression Model (Naimi & Whitcomb, 2020)
@@ -11,7 +11,7 @@ by selecting the appropriate link function. They provided R codes that allow for
 reproduction of their results. Here, we will explore how to use these
 different models with another concrete example.
 
-## Odds ratio, Relative risk ratio and risk difference ratio
+## Odds Ratio, Relative Risk Ratio and Risk Rifference Ratio
 
 Traditionally estimated in epidemiological studies, let's consider 
 three estimates: 1) the odds ratio, 2) the relative risk ratio, and 3) the risk
@@ -70,7 +70,7 @@ This estimate can be found from a 2*2 contingency table as follows:
 
 $$\ RD = a/(a+b) - c/(c+d)$$
 
-## Generalized linear models
+## Generalized Linear Models
 
 Generalized linear models are special cases of models, often used
 in R to explore how a predictor variable (or more) predicts a
@@ -89,7 +89,7 @@ estimates, we will focus on three link functions. (give defintions of the link f
 
 `identity`: $P$
 
-## Program the data (Wrensch et al., 1997): Estimate Odds ratios, Risk Ratios, and Risk Differences Using Regression 
+## Program the Data (Wrensch et al., 1997): Estimate Odds ratios, Risk Ratios, and Risk Differences Using Regression 
 
 We're going to borrow the data published in Wrensch and
 colleagues. (1997). In this case-control study, these authors estimated
